@@ -1,8 +1,9 @@
-package com.pyding.ng;
+package com.pyding.easy_tweaker;
 
-import com.pyding.ng.network.PacketHandler;
-import com.pyding.ng.util.ConfigHandler;
-import com.pyding.ng.event.EventHandler;
+import com.pyding.easy_tweaker.item.ModItems;
+import com.pyding.easy_tweaker.network.PacketHandler;
+import com.pyding.easy_tweaker.util.ConfigHandler;
+import com.pyding.easy_tweaker.event.EventHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -11,13 +12,13 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod(NoGrief.MODID)
-public class NoGrief
+@Mod(EasyTweaker.MODID)
+public class EasyTweaker
 {
-    public static final String MODID = "ng";
+    public static final String MODID = "easy_tweaker";
     public static EventHandler eventHandler;
 
-    public NoGrief()
+    public EasyTweaker()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
@@ -25,6 +26,7 @@ public class NoGrief
         eventHandler = new EventHandler();
         MinecraftForge.EVENT_BUS.register(eventHandler);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConfigHandler.COMMON_SPEC);
+        ModItems.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)

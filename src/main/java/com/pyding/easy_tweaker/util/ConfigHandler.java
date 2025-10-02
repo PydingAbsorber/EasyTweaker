@@ -1,4 +1,4 @@
-package com.pyding.ng.util;
+package com.pyding.easy_tweaker.util;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;

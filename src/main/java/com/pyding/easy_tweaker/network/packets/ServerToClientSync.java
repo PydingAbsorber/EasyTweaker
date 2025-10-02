@@ -1,7 +1,5 @@
-package com.pyding.ng.network.packets;
+package com.pyding.easy_tweaker.network.packets;
 
-import com.pyding.ng.util.ConfigHandler;
-import com.pyding.ng.util.ZoneUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -34,6 +32,6 @@ public class ServerToClientSync {
 
     @OnlyIn(Dist.CLIENT)
     private static void handle2(String message) {
-        ZoneUtil.zones = ZoneUtil.parseInput(message);
+
     }
 }
