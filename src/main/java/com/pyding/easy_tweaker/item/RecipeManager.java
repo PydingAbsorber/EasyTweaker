@@ -3,11 +3,15 @@ package com.pyding.easy_tweaker.item;
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.level.CraftTweakerSavedData;
 import com.pyding.easy_tweaker.EasyTweaker;
+import com.pyding.easy_tweaker.menu.TweakerMenu;
 import com.pyding.easy_tweaker.util.EasyUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,11 +27,23 @@ public class RecipeManager extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand p_41434_) {
-        if (level.isClientSide())
+        /*if (level.isClientSide())
             return super.use(level, player, p_41434_);
         List<String> list = new ArrayList<>();
         list.add("item:minecraft:dirt");
-        EasyUtil.writeRecipe(EasyUtil.addShapeless("item:minecraft:apple","apple",2,list),player);
+        EasyUtil.writeRecipe(EasyUtil.addShapeless("item:minecraft:apple","apple",2,list),player);*/
+        openGUI(player);
         return super.use(level, player, p_41434_);
+    }
+
+    public static void openGUI(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(new SimpleMenuProvider(
+                    (containerId, playerInventory, playerEntity) ->
+                            new TweakerMenu(containerId, playerInventory,
+                                    ContainerLevelAccess.create(player.level(), player.blockPosition())),
+                    Component.literal("Tweaker Menu")
+            ));
+        }
     }
 }

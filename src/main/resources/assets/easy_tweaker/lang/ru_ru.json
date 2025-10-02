@@ -1,2 +1,8 @@
 {
+  "item.easy_tweaker.recipe_manager": "Менеджер Рецептов",
+  "et.button.copy": "Скопировать рецепт",
+  "et.button.add": "Добавить рецепт",
+  "et.button.reload": "Перезагрузить рецепты",
+  "et.switch.on": "Сменить режим рецепта на удаление.",
+  "et.switch.off": "Сменить режим рецепта на добавление."
 }

@@ -13,7 +13,6 @@ public class ModItems {
 
     public static final RegistryObject<Item> RecipeManager = ITEMS.register("recipe_manager", () -> new RecipeManager(new Item.Properties().stacksTo(1)));
 
-
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

@@ -1,6 +1,8 @@
 package com.pyding.easy_tweaker;
 
+import com.pyding.easy_tweaker.item.ModCreativeTab;
 import com.pyding.easy_tweaker.item.ModItems;
+import com.pyding.easy_tweaker.menu.ModMenus;
 import com.pyding.easy_tweaker.network.PacketHandler;
 import com.pyding.easy_tweaker.util.ConfigHandler;
 import com.pyding.easy_tweaker.event.EventHandler;
@@ -27,6 +29,8 @@ public class EasyTweaker
         MinecraftForge.EVENT_BUS.register(eventHandler);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConfigHandler.COMMON_SPEC);
         ModItems.register(modEventBus);
+        ModMenus.MENUS.register(modEventBus);
+        ModCreativeTab.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)

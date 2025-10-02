@@ -1,3 +1,8 @@
 {
-
+  "item.easy_tweaker.recipe_manager": "Recipe Manager",
+  "et.button.copy": "Copy recipe",
+  "et.button.add": "Add recipe",
+  "et.button.reload": "Reload recipes",
+  "et.switch.on": "Switch recipe to remove mode.",
+  "et.switch.off": "Switch recipe to addition mode."
 }
