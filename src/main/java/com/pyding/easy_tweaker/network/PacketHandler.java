@@ -1,6 +1,7 @@
 package com.pyding.easy_tweaker.network;
 
 import com.pyding.easy_tweaker.EasyTweaker;
+import com.pyding.easy_tweaker.network.packets.GuiPacket;
 import com.pyding.easy_tweaker.network.packets.ServerToClientSync;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +28,7 @@ public class PacketHandler {
                 .simpleChannel();
 
         INSTANCE = net;
+        net.registerMessage(id(), GuiPacket.class, GuiPacket::encode, GuiPacket::decode, GuiPacket::handle);
         net.registerMessage(id(), ServerToClientSync.class, ServerToClientSync::encode, ServerToClientSync::decode, ServerToClientSync::handle);
     }
     public static void sendToClient(Object packet, ServerPlayer player) {

@@ -13,7 +13,10 @@ public class ClientRegistry {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            MenuScreens.register(ModMenus.TWEAKER_MENU.get(), TweakerScreen::new);
+            MenuScreens.register(ModMenus.WORKBENCH_MENU.get(), WorkbenchScreen::new);
+            MenuScreens.register(ModMenus.FURNACE_MENU.get(), FurnaceScreen::new);
+            MenuScreens.register(ModMenus.BREWING_MENU.get(), BrewingScreen::new);
+            MenuScreens.register(ModMenus.SMITHING_MENU.get(), SmithingScreen::new);
         });
     }
 }

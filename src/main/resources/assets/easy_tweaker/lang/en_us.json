@@ -1,5 +1,6 @@
 {
   "item.easy_tweaker.recipe_manager": "Recipe Manager",
+  "itemGroup.easy_tweaker_tab": "Easy Tweaker",
   "et.button.copy": "Copy recipe",
   "et.button.add": "Add recipe",
   "et.button.reload": "Reload recipes",

@@ -7,6 +7,7 @@ import com.pyding.easy_tweaker.network.PacketHandler;
 import com.pyding.easy_tweaker.util.ConfigHandler;
 import com.pyding.easy_tweaker.event.EventHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -31,10 +32,17 @@ public class EasyTweaker
         ModItems.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
         ModCreativeTab.register(modEventBus);
+        modEventBus.addListener(this::addCreative);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         PacketHandler.register();
+    }
+
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTab() == ModCreativeTab.VP_TAB.get()) {
+            event.accept(ModItems.RecipeManager);
+        }
     }
 }

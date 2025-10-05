@@ -2,7 +2,10 @@ package com.pyding.easy_tweaker.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.pyding.easy_tweaker.EasyTweaker;
+import com.pyding.easy_tweaker.item.RecipeManager;
 import com.pyding.easy_tweaker.menu.TweakerMenu;
+import com.pyding.easy_tweaker.network.PacketHandler;
+import com.pyding.easy_tweaker.network.packets.GuiPacket;
 import com.pyding.easy_tweaker.util.EasyUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,52 +13,70 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class TweakerScreen extends AbstractContainerScreen<TweakerMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
+public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractContainerScreen<T> {
+    private ResourceLocation BACKGROUND = null;
     private static final ResourceLocation BUTTON = new ResourceLocation(EasyTweaker.MODID, "textures/gui/button.png");
     private static final ResourceLocation SWITCH_ACTIVE = new ResourceLocation(EasyTweaker.MODID, "textures/gui/switch_active.png");
     private static final ResourceLocation SWITCH_UNACTIVE = new ResourceLocation(EasyTweaker.MODID, "textures/gui/switch_unactive.png");
 
-    public static String recipe = "";
+    public String getRecipe(){
+        return "";
+    }
+
+    public T menu = null;
+
+    public ResourceLocation getBackground(){
+        if(BACKGROUND == null)
+            BACKGROUND = new ResourceLocation(getBGDirectory(), getBGResourceLocation());
+        return BACKGROUND;
+    }
+
+    public String getBGDirectory(){
+        return "minecraft";
+    }
+
+    public String getBGResourceLocation(){
+        return "";
+    }
+
     public static boolean switchOn = true;
 
-    public TweakerScreen(TweakerMenu menu, net.minecraft.world.entity.player.Inventory inv, Component title) {
+    public TweakerScreen(T menu, net.minecraft.world.entity.player.Inventory inv, Component title) {
         super(menu, inv, title);
         this.imageWidth = 176;
         this.imageHeight = 166;
+        this.menu = menu;
     }
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, BACKGROUND);
+        RenderSystem.setShaderTexture(0, getBackground());
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(BACKGROUND, x, y, 0, 0, this.imageWidth, this.imageHeight);
-        List<String> items = this.menu.listAllItems();
-        String main = items.get(9);
-        items.remove(9);
-        int textWidth = this.width * 4 / 5;
+        guiGraphics.blit(getBackground(), x, y, 0, 0, this.imageWidth, this.imageHeight);
+        int textWidth = (this.width * 4) / 5;
         int textStartX = (this.width - textWidth) / 2;
-        int textY = this.height - this.height / 5;
-        String longText = "";
-        if(switchOn)
-            longText = EasyUtil.addShapeless(main, main, 1, items);
-        else longText = EasyUtil.removeRecipeCraftingTable(main);
+        int textY = switchActive.getY() + switchActive.getY() / 5;
+        String longText = getRecipe();
         int lineHeight = this.font.lineHeight;
         List<FormattedCharSequence> lines = this.font.split(Component.literal(longText), textWidth);
         for (int i = 0; i < lines.size(); i++) {
             guiGraphics.drawString(this.font, lines.get(i), textStartX, textY + (i * lineHeight), 0xFFFFFF, false);
         }
-        recipe = longText;
         switchActive.visible = switchOn;
         switchUnactive.visible = !switchOn;
+        int buttonX = 270/5-20;
+        int buttonY = 110/5;
+        guiGraphics.drawString(this.font, Component.translatable("et.button.copy"), buttonX+copy.getX(), buttonY+copy.getY(), 0xFFFFFF, true);
+        guiGraphics.drawString(this.font, Component.translatable("et.button.add"), buttonX+addRecipe.getX(), buttonY+addRecipe.getY(), 0xFFFFFF, true);
+        guiGraphics.drawString(this.font, Component.translatable("et.button.reload"), buttonX+reload.getX(), buttonY+reload.getY(), 0xFFFFFF, true);
     }
 
     @Override
@@ -65,44 +86,61 @@ public class TweakerScreen extends AbstractContainerScreen<TweakerMenu> {
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
 
+    private static final ResourceLocation ICON_CRAFTING = new ResourceLocation("minecraft", "textures/item/crafting_table.png");
+    private static final ResourceLocation ICON_FURNACE = new ResourceLocation("minecraft", "textures/item/furnace.png");
+    private static final ResourceLocation ICON_SMITHING = new ResourceLocation("minecraft", "textures/item/smithing_table.png");
+    private static final ResourceLocation ICON_BREWING = new ResourceLocation("minecraft", "textures/item/brewing_stand.png");
+
+    protected ImageButton craftingIcon;
+    protected ImageButton furnaceIcon;
+    protected ImageButton smithingIcon;
+    protected ImageButton brewingIcon;
+
     public static Button switchActive;
     public static Button switchUnactive;
+    public static Button copy;
+    public static Button addRecipe;
+    public static Button reload;
 
     @Override
     protected void init() {
         super.init();
+        LocalPlayer player = Minecraft.getInstance().player;
+        if(player == null)
+            return;
+        if(!player.hasPermissions(2)) {
+            player.sendSystemMessage(Component.literal("You don't have enough rights to use this gui."));
+            this.onClose();
+        }
         int buttonX = 270/2;
         int buttonY = 110/2;
         int x = this.width/2 - buttonX/2;
         int y = this.height - this.height/3 - buttonY/2;
-        Button copy = new ImageButton(
+        copy = new ImageButton(
                 x-buttonX, y,
                 buttonX, buttonY,
                 0, 0, 0,
                 BUTTON,
                 buttonX, buttonY,
-                button -> copyText(recipe),
-                Component.translatable("et.button.copy")
+                button -> copyText(getRecipe())
         );
         this.addRenderableWidget(copy);
-        Button addRecipe = new ImageButton(
+        addRecipe = new ImageButton(
                 x, y,
                 buttonX, buttonY,
                 0, 0, 0,
                 BUTTON,
                 buttonX, buttonY,
-                button -> copyText(recipe),
-                Component.translatable("et.button.add")
+                button -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),0,getRecipe()))
         );
         this.addRenderableWidget(addRecipe);
-        Button reload = new ImageButton(
+        reload = new ImageButton(
                 x+buttonX, y,
                 buttonX, buttonY,
                 0, 0, 0,
                 BUTTON,
                 buttonX, buttonY,
-                button -> copyText(recipe),
-                Component.translatable("et.button.reload")
+                button -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),1))
         );
         this.addRenderableWidget(reload);
         int buttonSize = 32*2;
@@ -128,6 +166,28 @@ public class TweakerScreen extends AbstractContainerScreen<TweakerMenu> {
         );
         switchUnactive.setTooltip(Tooltip.create(Component.translatable("et.switch.off")));
         this.addRenderableWidget(switchUnactive);
+
+        int iconSize = 24;
+        int spacing = 8;
+        int totalWidth = iconSize * 4 + spacing * 3;
+        int startX = (this.width - totalWidth) / 2;
+        y = this.topPos - 20;
+
+        craftingIcon = new ImageButton(startX, y, iconSize, iconSize, 0, 0, 0, ICON_CRAFTING, iconSize, iconSize,
+                btn -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),2)));
+        this.addRenderableWidget(craftingIcon);
+
+        furnaceIcon = new ImageButton(startX + (iconSize + spacing), y, iconSize, iconSize, 0, 0, 0, ICON_FURNACE, iconSize, iconSize,
+                btn -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),3)));
+        this.addRenderableWidget(furnaceIcon);
+
+        smithingIcon = new ImageButton(startX + 2 * (iconSize + spacing), y, iconSize, iconSize, 0, 0, 0, ICON_SMITHING, iconSize, iconSize,
+                btn -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),4)));
+        this.addRenderableWidget(smithingIcon);
+
+        brewingIcon = new ImageButton(startX + 3 * (iconSize + spacing), y, iconSize, iconSize, 0, 0, 0, ICON_BREWING, iconSize, iconSize,
+                btn -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),5)));
+        this.addRenderableWidget(brewingIcon);
     }
 
     private void copyText(String text) {

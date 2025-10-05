@@ -1,53 +1,30 @@
 package com.pyding.easy_tweaker.menu;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
+import com.pyding.easy_tweaker.item.RecipeManager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TweakerMenu extends AbstractContainerMenu {
-    public TweakerMenu(int containerId, Inventory playerInventory, ContainerLevelAccess access) {
-        super(ModMenus.TWEAKER_MENU.get(), containerId);
-        IItemHandler craftingSlots = new ItemStackHandler(10);
-        int startX = 30;
-        int startY = 17;
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                int x = startX + col * 18;
-                int y = startY + row * 18;
-                this.addSlot(new SlotItemHandler(craftingSlots, col + row * 3, x, y));
-            }
-        }
-        this.addSlot(new SlotItemHandler(craftingSlots, 9, 124, 35));
-        int invStartX = 8;
-        int invStartY = 84;
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, invStartX + col * 18, invStartY + row * 18));
-            }
-        }
-        for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(playerInventory, col, invStartX + col * 18, invStartY + 58));
-        }
-    }
 
-    public TweakerMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
-        this(containerId, playerInventory, ContainerLevelAccess.NULL);
+    public TweakerMenu(@Nullable MenuType<?> type, int id) {
+        super(type,id);
     }
 
     @Override
     public boolean stillValid(Player p_38874_) {
         return true;
+    }
+
+    public int getContainerSize(){
+        return 1;
     }
 
     @Override
@@ -57,12 +34,12 @@ public class TweakerMenu extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (index >= 0 && index < 9) {
-                if (!this.moveItemStackTo(itemstack1, 9, this.slots.size(), true)) {
+            if (index >= 0 && index < getContainerSize()) {
+                if (!this.moveItemStackTo(itemstack1, getContainerSize(), this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (!this.moveItemStackTo(itemstack1, 0, 9, false)) {
+                if (!this.moveItemStackTo(itemstack1, 0, getContainerSize(), false)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -82,7 +59,7 @@ public class TweakerMenu extends AbstractContainerMenu {
         super.removed(player);
         if (!player.level().isClientSide) {
             Inventory playerInventory = player.getInventory();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < getContainerSize(); i++) {
                 Slot slot = this.slots.get(i);
                 if (slot != null && slot.hasItem()) {
                     ItemStack stackInSlot = slot.getItem();
@@ -92,12 +69,22 @@ public class TweakerMenu extends AbstractContainerMenu {
                     slot.set(ItemStack.EMPTY);
                 }
             }
+            if(player.getMainHandItem().getItem() instanceof RecipeManager){
+                int id = 1;
+                if(this instanceof FurnaceMenu)
+                    id = 3;
+                else if(this instanceof SmithingMenu)
+                    id = 4;
+                else if(this instanceof BrewingMenu)
+                    id = 5;
+                player.getMainHandItem().getOrCreateTag().putInt("TweakGui",id);
+            }
         }
     }
 
     public List<String> listAllItems() {
         List<String> items = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < getContainerSize(); i++) {
             Slot slot = this.slots.get(i);
             if (slot.hasItem()) {
                 items.add(slot.getItem().getDescriptionId().replaceAll("\\.",":"));

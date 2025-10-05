@@ -4,10 +4,13 @@ import com.blamejared.crafttweaker.api.action.internal.CraftTweakerAction;
 import com.pyding.easy_tweaker.EasyTweaker;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EasyUtil {
@@ -21,7 +24,7 @@ public class EasyUtil {
     }
 
     public static String removeRecipeCraftingTable(String item) {
-        return "craftingTable.removeByName(\"" + item + "\");";
+        return "craftingTable.removeByName(\"" + cutPrefix(item) + "\");";
     }
 
     public static String removeBrew(String result,String reagent, String input) {
@@ -36,38 +39,39 @@ public class EasyUtil {
                 list.add("item:minecraft:air");
             }
         }
-        return "craftingTable.addShapeless(\"" + name + "\", " +
-                "<" + result + "> * " + count + ", " +
+
+        return "craftingTable.addShapeless(\"" + name.replaceAll(":","_") + "\", " +
+                "<" + changePrefix(result) + "> * " + count + ", " +
                 "[" +
-                "<" + list.get(0) + ">, " +
-                "<" + list.get(1) + ">, " +
-                "<" + list.get(2) + ">, " +
-                "<" + list.get(3) + ">, " +
-                "<" + list.get(4) + ">, " +
-                "<" + list.get(5) + ">, " +
-                "<" + list.get(6) + ">, " +
-                "<" + list.get(7) + ">, " +
-                "<" + list.get(8) + ">" +
+                "<" + changePrefix(list.get(0)) + ">, " +
+                "<" + changePrefix(list.get(1)) + ">, " +
+                "<" + changePrefix(list.get(2)) + ">, " +
+                "<" + changePrefix(list.get(3)) + ">, " +
+                "<" + changePrefix(list.get(4)) + ">, " +
+                "<" + changePrefix(list.get(5)) + ">, " +
+                "<" + changePrefix(list.get(6)) + ">, " +
+                "<" + changePrefix(list.get(7)) + ">, " +
+                "<" + changePrefix(list.get(8)) + ">" +
                 "]" +
                 ");";
     }
 
     public static String addFurnace(String result, String name, int count,
                                       String rawItem, float xp, int time) {
-        return "furnace.addRecipe(\"" + name + "\", " +
-                "<" + result + "> * " + count + ", " +
-                "<" + rawItem + ">, " +
+        return "furnace.addRecipe(\"" + name.replaceAll(":","_") + "\", " +
+                "<" + changePrefix(result)+ "> * " + count + ", " +
+                "<" + changePrefix(rawItem) + ">, " +
                 xp + ", " +
                 time +
                 ");";
     }
 
     public static String addSmithy(String result, String name, String base, String template, String material) {
-        return "smithing.addTransformRecipe(\"" + name + "\", " +
-                "<" + result + ">, " +
-                "<" + template + ">, " +
-                "<" + base + ">, " +
-                "<" + material + ">, " +
+        return "smithing.addTransformRecipe(\"" + name.replaceAll(":","_") + "\", " +
+                "<" + changePrefix(result) + ">, " +
+                "<" + changePrefix(template) + ">, " +
+                "<" + changePrefix(base) + ">, " +
+                "<" + changePrefix(material) + ">, " +
                 ");";
     }
 
@@ -83,34 +87,38 @@ public class EasyUtil {
                 list.add("item:minecraft:air");
             }
         }
-        return "<recipetype:botania:petal_apothecary>.add(\"" + name + "\", " +
-                "<" + result + "> * " + count + ", " +
+        return "<recipetype:botania:petal_apothecary>.add(\"" + name.replaceAll(":","_") + "\", " +
+                "<" + result.replace("<block:", "<item:") + "> * " + count + ", " +
                 "[" +
-                "<" + list.get(0) + ">, " +
-                "<" + list.get(1) + ">, " +
-                "<" + list.get(2) + ">, " +
-                "<" + list.get(3) + ">, " +
-                "<" + list.get(4) + ">, " +
-                "<" + list.get(5) + ">, " +
-                "<" + list.get(6) + ">, " +
-                "<" + list.get(7) + ">, " +
-                "<" + list.get(8) + ">" +
+                "<" + changePrefix(list.get(0)) + ">, " +
+                "<" + changePrefix(list.get(1)) + ">, " +
+                "<" + changePrefix(list.get(2)) + ">, " +
+                "<" + changePrefix(list.get(3)) + ">, " +
+                "<" + changePrefix(list.get(4)) + ">, " +
+                "<" + changePrefix(list.get(5)) + ">, " +
+                "<" + changePrefix(list.get(6)) + ">, " +
+                "<" + changePrefix(list.get(7)) + ">, " +
+                "<" + changePrefix(list.get(8)) + ">" +
                 "]" +
                 ");";
     }
 
     public static void writeRecipe(String recipe, Player player){
+        if(!player.hasPermissions(2))
+            return;
         String jarPath = EasyTweaker.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         File jarFile = new File(jarPath);
         File modsDir = jarFile.getParentFile();
         if (modsDir == null || !modsDir.getName().equals("mods")) {
-            player.sendSystemMessage(Component.literal("Can't locate mods folder."));
+            if(player != null)
+                player.sendSystemMessage(Component.literal("Can't locate mods folder."));
             return;
         }
 
         File mcRoot = modsDir.getParentFile();
         if (mcRoot == null) {
-            player.sendSystemMessage(Component.literal("Can't locate minecraft folder."));
+            if(player != null)
+                player.sendSystemMessage(Component.literal("Can't locate minecraft folder."));
             return;
         }
 
@@ -134,5 +142,39 @@ public class EasyUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String cutPrefix(String remove) {
+        String target = "item:";
+        int index = remove.indexOf(target);
+        if (index != -1) {
+            return remove.substring(index + target.length());
+        }
+        target = "block:";
+        index = remove.indexOf(target);
+        if (index != -1) {
+            return remove.substring(index + target.length());
+        }
+        return remove;
+    }
+
+    public static String changePrefix(String item) {
+        String target = "block:";
+        int index = item.indexOf(target);
+        if (index != -1) {
+            return item.replaceAll("block:","item:");
+        }
+        return item;
+    }
+
+    public List<String> listAllItems(List<Slot> slots) {
+        List<String> items = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Slot slot =slots.get(i);
+            if (slot.hasItem()) {
+                items.add(slot.getItem().getDescriptionId().replaceAll("\\.",":"));
+            } else items.add("item:minecraft:air");
+        }
+        return items;
     }
 }

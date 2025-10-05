@@ -1,5 +1,6 @@
 {
   "item.easy_tweaker.recipe_manager": "Менеджер Рецептов",
+  "itemGroup.easy_tweaker_tab": "Easy Tweaker",
   "et.button.copy": "Скопировать рецепт",
   "et.button.add": "Добавить рецепт",
   "et.button.reload": "Перезагрузить рецепты",
