@@ -15,8 +15,8 @@ import java.util.List;
 
 public class EasyUtil {
 
-    public static String removeFurnace(String item, String smeltedItem) {
-        return "furnace.remove(<" + smeltedItem + ">, <" + item + ">);";
+    public static String removeFurnace(String smeltedItem) {
+        return "furnace.remove(<" + smeltedItem + ">);";
     }
 
     public static String removeSmithy(String item) {
@@ -28,6 +28,10 @@ public class EasyUtil {
     }
 
     public static String removeBrew(String result,String reagent, String input) {
+        if(result.contains("potion"))
+            result = transformPotion(result);
+        if(input.contains("potion"))
+            input = transformPotion(input);
         return "brewing.removeRecipe(<" + result + ">, <" + reagent + ">, <" + input + ">);";
     }
 
@@ -71,11 +75,15 @@ public class EasyUtil {
                 "<" + changePrefix(result) + ">, " +
                 "<" + changePrefix(template) + ">, " +
                 "<" + changePrefix(base) + ">, " +
-                "<" + changePrefix(material) + ">, " +
+                "<" + changePrefix(material) + ">" +
                 ");";
     }
 
     public static String addBrew(String result,String reagent, String input) {
+        if(result.contains("potion"))
+            result = transformPotion(result);
+        if(input.contains("potion"))
+            input = transformPotion(input);
         return "brewing.addRecipe(<" + result + ">, <" + reagent + ">, <" + input + ">);";
     }
 
@@ -176,5 +184,14 @@ public class EasyUtil {
             } else items.add("item:minecraft:air");
         }
         return items;
+    }
+
+    public static String transformPotion(String input) {
+        String[] parts = input.split(":");
+        if (parts.length == 5) {
+            return parts[2] + ":" + parts[1] + ":" + parts[4];
+        } else {
+            return input;
+        }
     }
 }

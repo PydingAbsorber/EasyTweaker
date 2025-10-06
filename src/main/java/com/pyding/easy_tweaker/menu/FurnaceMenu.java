@@ -8,14 +8,14 @@ import net.minecraft.world.inventory.Slot;
 public class FurnaceMenu extends TweakerMenu {
 
     public FurnaceMenu(int id, Inventory playerInventory) {
-        this(id, playerInventory, new SimpleContainer(3));
+        this(id, playerInventory, new SimpleContainer(2));
     }
 
     public FurnaceMenu(int id, Inventory playerInventory, SimpleContainer container) {
         super(ModMenus.FURNACE_MENU.get(), id);
         this.addSlot(new Slot(container, 0, 56, 17));
-        this.addSlot(new Slot(container, 1, 56, 53));
-        this.addSlot(new Slot(container, 2, 116, 35));
+        this.addSlot(new Slot(container, 1, 116, 35));
+        //this.addSlot(new Slot(container, 0, 56, 53));
         int invStartX = 8;
         int invStartY = 84;
         for (int row = 0; row < 3; row++) {
@@ -31,12 +31,12 @@ public class FurnaceMenu extends TweakerMenu {
     }
 
     public FurnaceMenu(int id, Inventory inv, FriendlyByteBuf buf) {
-        this(id, inv, new SimpleContainer(3));
+        this(id, inv, new SimpleContainer(2));
     }
 
     @Override
     public int getContainerSize() {
-        return 3;
+        return 2;
     }
 
 }

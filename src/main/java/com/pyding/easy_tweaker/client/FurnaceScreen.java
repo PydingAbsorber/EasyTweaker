@@ -24,7 +24,7 @@ public class FurnaceScreen extends TweakerScreen<FurnaceMenu> {
         items.remove(1);
         if(switchOn)
             return EasyUtil.addFurnace(main,main,1,items.get(0),1,1);
-        return EasyUtil.removeFurnace(items.get(0),main);
+        return EasyUtil.removeFurnace(main);
     }
 }
 

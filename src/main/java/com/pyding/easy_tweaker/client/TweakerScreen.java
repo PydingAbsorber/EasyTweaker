@@ -86,10 +86,10 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
 
-    private static final ResourceLocation ICON_CRAFTING = new ResourceLocation("minecraft", "textures/item/crafting_table.png");
-    private static final ResourceLocation ICON_FURNACE = new ResourceLocation("minecraft", "textures/item/furnace.png");
-    private static final ResourceLocation ICON_SMITHING = new ResourceLocation("minecraft", "textures/item/smithing_table.png");
-    private static final ResourceLocation ICON_BREWING = new ResourceLocation("minecraft", "textures/item/brewing_stand.png");
+    private static final ResourceLocation ICON_CRAFTING = new ResourceLocation(EasyTweaker.MODID, "textures/gui/workbench.png");
+    private static final ResourceLocation ICON_FURNACE = new ResourceLocation(EasyTweaker.MODID, "textures/gui/furnace.png");
+    private static final ResourceLocation ICON_SMITHING = new ResourceLocation(EasyTweaker.MODID, "textures/gui/smithing.png");
+    private static final ResourceLocation ICON_BREWING = new ResourceLocation(EasyTweaker.MODID, "textures/gui/brewing.png");
 
     protected ImageButton craftingIcon;
     protected ImageButton furnaceIcon;
@@ -167,11 +167,11 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         switchUnactive.setTooltip(Tooltip.create(Component.translatable("et.switch.off")));
         this.addRenderableWidget(switchUnactive);
 
-        int iconSize = 24;
-        int spacing = 8;
+        int iconSize = 64;
+        int spacing = 16;
         int totalWidth = iconSize * 4 + spacing * 3;
         int startX = (this.width - totalWidth) / 2;
-        y = this.topPos - 20;
+        y = this.topPos - 40 - iconSize;
 
         craftingIcon = new ImageButton(startX, y, iconSize, iconSize, 0, 0, 0, ICON_CRAFTING, iconSize, iconSize,
                 btn -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),2)));
