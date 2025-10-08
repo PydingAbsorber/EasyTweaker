@@ -5,6 +5,9 @@ import com.pyding.easy_tweaker.menu.SmithingMenu;
 import com.pyding.easy_tweaker.util.EasyUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.alchemy.Potion;
 
 import java.util.List;
 
@@ -25,9 +28,13 @@ public class SmithingScreen extends TweakerScreen<SmithingMenu> {
         String main = items.get(3);
         items.remove(3);
         String nbt = "";
-        if(switchTagOn)
+        ItemStack mainStack = this.menu.getMainStack();
+        boolean potion = mainStack.getItem() instanceof PotionItem;
+        if(switchTagOn && !potion)
             nbt = ".withTag(" + menu.getMainNbt() +")";
         String name = main;
+        if(potion)
+            name = mainStack.getDescriptionId().replaceAll("\\.","_");
         if(!recipeName.getValue().isEmpty())
             name = recipeName.getValue();
         int quant = 1;

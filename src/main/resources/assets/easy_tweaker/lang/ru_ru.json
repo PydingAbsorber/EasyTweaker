@@ -6,6 +6,10 @@
   "et.button.reload": "Перезагрузить рецепты",
   "et.switch.on": "Сменить режим рецепта на удаление.",
   "et.switch.off": "Сменить режим рецепта на добавление.",
-  "et.switch_tag.on": "Switch to disable tags.",
-  "et.switch_tag.off": "Switch to enable tags."
+  "et.switch_tag.on": "Отключить тэги.",
+  "et.switch_tag.off": "Включить тэги.",
+  "et.switch_shape.on": "Сменить на бесформенный.",
+  "et.switch_shape.off": "Сменить на форменный.",
+  "et.switch_blast.on": "Сменить на Плавильную Печь.",
+  "et.switch_blast.off": "Сменить на Печь."
 }

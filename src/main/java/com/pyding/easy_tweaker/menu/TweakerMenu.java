@@ -1,7 +1,9 @@
 package com.pyding.easy_tweaker.menu;
 
+import com.pyding.easy_tweaker.EasyTweaker;
 import com.pyding.easy_tweaker.item.RecipeManager;
 import com.pyding.easy_tweaker.mixin.SmitingMixing;
+import com.pyding.easy_tweaker.util.EasyUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.entity.player.Inventory;
@@ -10,6 +12,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SmithingTemplateItem;
 
 import javax.annotation.Nullable;
@@ -91,18 +94,28 @@ public class TweakerMenu extends AbstractContainerMenu {
         for (int i = 0; i < getContainerSize(); i++) {
             Slot slot = this.slots.get(i);
             if (slot.hasItem()) {
-                if (slot.getItem().getItem() instanceof SmithingTemplateItem) {
-                    //items.add(translatableContents.getKey());  && ((SmitingMixing) templateItem).upgradeDescription().getContents() instanceof TranslatableContents translatableContents
-                    items.add("item:" + BuiltInRegistries.ITEM.getKey(slot.getItem().getItem()));
+                ItemStack stack = slot.getItem();
+                if (stack.getItem() instanceof SmithingTemplateItem) {
+                    items.add("item:" + BuiltInRegistries.ITEM.getKey(stack.getItem()));
                 }
-                else items.add(slot.getItem().getDescriptionId().replaceAll("\\.",":"));
+                if(stack.getItem() instanceof PotionItem){
+                    String tag = "";
+                    if(stack.hasTag())
+                        tag = stack.getTag().toString();
+                    items.add("<" + EasyUtil.transformPotion(stack.getDescriptionId().replaceAll("\\.",":")) + ">.withTag(" + tag + ")easyt_potion");
+                }
+                else items.add(stack.getDescriptionId().replaceAll("\\.",":"));
             } else items.add("item:minecraft:air");
         }
         return items;
     }
 
+    public ItemStack getMainStack(){
+        return this.slots.get(getContainerSize()-1).getItem();
+    }
+
     public String getMainNbt(){
-        ItemStack stack = this.slots.get(getContainerSize()-1).getItem();
+        ItemStack stack = getMainStack();
         if(stack.hasTag())
             return stack.getTag().toString();
         return "";

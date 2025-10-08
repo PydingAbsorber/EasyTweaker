@@ -19,6 +19,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -50,6 +51,8 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
 
     public static boolean switchOn = true;
     public static boolean switchTagOn = false;
+    public static boolean shapeOn = false;
+    public static boolean blastOn = false;
 
     public TweakerScreen(T menu, net.minecraft.world.entity.player.Inventory inv, Component title) {
         super(menu, inv, title);
@@ -66,7 +69,13 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         guiGraphics.blit(getBackground(), x, y, 0, 0, this.imageWidth, this.imageHeight);
         int textWidth = (this.width * 4) / 5;
         int textStartX = (this.width - textWidth) / 2;
-        int textY = switchActive.getY() + switchActive.getY() / 5;
+        int textY = switchActive.getY() + switchActive.getY() / 6;
+        boolean workbench = this instanceof WorkbenchScreen;
+        boolean furnaceGui = this instanceof FurnaceScreen;
+        if(workbench)
+            textY = shaped.getY() + shaped.getY() / 6;
+        if(furnaceGui)
+            textY = blastFurnace.getY() + blastFurnace.getY() / 6;
         String longText = getRecipe();
         int lineHeight = this.font.lineHeight;
         List<FormattedCharSequence> lines = this.font.split(Component.literal(longText), textWidth);
@@ -77,6 +86,10 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         switchUnactive.visible = !switchOn;
         tagSwitchActive.visible = switchTagOn;
         tagSwitchUnactive.visible = !switchTagOn;
+        shaped.visible = !shapeOn & workbench;
+        shapeless.visible = shapeOn & workbench;
+        blastFurnace.visible = !blastOn & furnaceGui;
+        furnace.visible = blastOn & furnaceGui;
         int buttonX = 270/5-20;
         int buttonY = 110/5;
         guiGraphics.drawString(this.font, Component.translatable("et.button.copy"), buttonX+copy.getX(), buttonY+copy.getY(), 0xFFFFFF, true);
@@ -110,6 +123,10 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
     public static Button reload;
     public static EditBox quantity;
     public static EditBox recipeName;
+    public static Button shapeless;
+    public static Button shaped;
+    public static Button blastFurnace;
+    public static Button furnace;
 
     @Override
     protected void init() {
@@ -196,6 +213,48 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         tagSwitchUnactive.setTooltip(Tooltip.create(Component.translatable("et.switch_tag.off")));
         this.addRenderableWidget(tagSwitchUnactive);
 
+        shapeless = new ImageButton(
+                x, y + buttonSize - buttonSize/3,
+                buttonSize, buttonSize,
+                0, 0, 0,
+                SWITCH_ACTIVE,
+                buttonSize, buttonSize,
+                button -> shapeOn = false
+        );
+        shapeless.setTooltip(Tooltip.create(Component.translatable("et.switch_shape.on")));
+        this.addRenderableWidget(shapeless);
+        shaped = new ImageButton(
+                x, y + buttonSize - buttonSize/3,
+                buttonSize, buttonSize,
+                0, 0, 0,
+                SWITCH_UNACTIVE,
+                buttonSize, buttonSize,
+                button -> shapeOn = true
+        );
+        shaped.setTooltip(Tooltip.create(Component.translatable("et.switch_shape.off")));
+        this.addRenderableWidget(shaped);
+
+        blastFurnace = new ImageButton(
+                x, y + buttonSize - buttonSize/3,
+                buttonSize, buttonSize,
+                0, 0, 0,
+                SWITCH_ACTIVE,
+                buttonSize, buttonSize,
+                button -> blastOn = true
+        );
+        blastFurnace.setTooltip(Tooltip.create(Component.translatable("et.switch_blast.on")));
+        this.addRenderableWidget(blastFurnace);
+        furnace = new ImageButton(
+                x, y + buttonSize - buttonSize/3,
+                buttonSize, buttonSize,
+                0, 0, 0,
+                SWITCH_UNACTIVE,
+                buttonSize, buttonSize,
+                button -> blastOn = false
+        );
+        furnace.setTooltip(Tooltip.create(Component.translatable("et.switch_blast.off")));
+        this.addRenderableWidget(furnace);
+
         int boxSizeX = 120;
         int boxSizeY = 26;
         x = this.width/2 - boxSizeX/2;
@@ -234,6 +293,19 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         brewingIcon = new ImageButton(startX + 3 * (iconSize + spacing), y, iconSize, iconSize, 0, 0, 0, ICON_BREWING, iconSize, iconSize,
                 btn -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),5)));
         this.addRenderableWidget(brewingIcon);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (recipeName.isFocused()) {
+            if (keyCode == GLFW.GLFW_KEY_E) {
+                return recipeName.keyPressed(keyCode, scanCode, modifiers);
+            }
+            if (recipeName.keyPressed(keyCode, scanCode, modifiers) || recipeName.canConsumeInput()) {
+                return true;
+            }
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void copyText(String text) {

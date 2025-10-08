@@ -16,7 +16,7 @@ import java.util.List;
 public class EasyUtil {
 
     public static String removeFurnace(String smeltedItem) {
-        return "furnace.remove(<" + smeltedItem + ">);";
+        return "furnace.remove(" + transform(smeltedItem) + ");";
     }
 
     public static String removeSmithy(String item) {
@@ -28,11 +28,7 @@ public class EasyUtil {
     }
 
     public static String removeBrew(String result,String reagent, String input) {
-        if(result.contains("potion"))
-            result = transformPotion(result);
-        if(input.contains("potion"))
-            input = transformPotion(input);
-        return "brewing.removeRecipe(<" + result + ">, <" + reagent + ">, <" + input + ">);";
+        return "brewing.removeRecipe(" + transform(result) + ", " + transform(reagent) + ", " + transform(input) + ");";
     }
 
     public static String addShapeless(String result, String name, int count,
@@ -45,46 +41,65 @@ public class EasyUtil {
         }
 
         return "craftingTable.addShapeless(\"" + name.replaceAll(":","_") + "\", " +
-                "<" + changePrefix(result) + ">" + nbt + " * " + count + ", " +
+                transform(result) + nbt + " * " + count + ", " +
                 "[" +
-                "<" + changePrefix(list.get(0)) + ">, " +
-                "<" + changePrefix(list.get(1)) + ">, " +
-                "<" + changePrefix(list.get(2)) + ">, " +
-                "<" + changePrefix(list.get(3)) + ">, " +
-                "<" + changePrefix(list.get(4)) + ">, " +
-                "<" + changePrefix(list.get(5)) + ">, " +
-                "<" + changePrefix(list.get(6)) + ">, " +
-                "<" + changePrefix(list.get(7)) + ">, " +
-                "<" + changePrefix(list.get(8)) + ">" +
+                transform(list.get(0)) + ", " +
+                transform(list.get(1)) + ", " +
+                transform(list.get(2)) + ", " +
+                transform(list.get(3)) + ", " +
+                transform(list.get(4)) + ", " +
+                transform(list.get(5)) + ", " +
+                transform(list.get(6)) + ", " +
+                transform(list.get(7)) + ", " +
+                transform(list.get(8)) +
                 "]" +
                 ");";
+    }
+
+    public static String addShaped(String result, String name, int count,
+                                      List<String> list, String nbt) {
+        int size = list.size();
+        if(size < 9){
+            for(int i = 0; i < 9-size;i++){
+                list.add("item:minecraft:air");
+            }
+        }
+
+        return "craftingTable.addShaped(\"" + name.replaceAll(":","_") + "\", " +
+                transform(result) + nbt + " * " + count + ", [" +
+                "[" + transform(list.get(0)) + ", " + transform(list.get(1)) + ", " + transform(list.get(2)) + "], " +
+                "[" + transform(list.get(3)) + ", " + transform(list.get(4)) + ", " + transform(list.get(5)) + "], " +
+                "[" + transform(list.get(6)) + ", " + transform(list.get(7)) + ", " + transform(list.get(8)) + "]" + "]" + ");";
     }
 
     public static String addFurnace(String result, String name, int count,
                                       String rawItem, float xp, int time, String nbt) {
         return "furnace.addRecipe(\"" + name.replaceAll(":","_") + "\", " +
-                "<" + changePrefix(result)+ ">" + nbt + " * " + count + ", " +
-                "<" + changePrefix(rawItem) + ">, " +
+                transform(result) + nbt + " * " + count + ", " +
+                transform(rawItem) + ", " +
                 xp + ", " +
-                time +
-                ");";
+                time + ");";
+    }
+
+    public static String addBlastFurnace(String result, String name, int count,
+                                    String rawItem, float xp, int time, String nbt) {
+        return "blastFurnace.addRecipe(\"" + name.replaceAll(":","_") + "\", " +
+                transform(result) + nbt + " * " + count + ", " +
+                transform(rawItem) + ", " +
+                xp + ", " +
+                time + ");";
     }
 
     public static String addSmithy(String result, String name, String base, String template, String material, String nbt, int quantity) {
         return "smithing.addTransformRecipe(\"" + name.replaceAll(":","_") + "\", " +
-                "<" + changePrefix(result) + ">" + nbt + " * " + quantity + ", " +
-                "<" + changePrefix(template) + ">, " +
-                "<" + changePrefix(base) + ">, " +
-                "<" + changePrefix(material) + ">" +
-                ");";
+                transform(result) + nbt + " * " + quantity + ", " +
+                transform(template) + ", " +
+                transform(base) + ", " +
+                transform(material) + ");";
     }
 
     public static String addBrew(String result,String reagent, String input, String nbt) {
-        if(result.contains("potion"))
-            result = transformPotion(result);
-        if(input.contains("potion"))
-            input = transformPotion(input);
-        return "brewing.addRecipe(<" + result + ">" + nbt + ", <" + reagent + ">, <" + input + ">);";
+        return "brewing.addRecipe(" + transform(result) + nbt + ", " + transform(reagent) + ", " + transform(input) + ");";
     }
 
     public static void writeRecipe(String recipe, Player player){
@@ -146,9 +161,17 @@ public class EasyUtil {
         String target = "block:";
         int index = item.indexOf(target);
         if (index != -1) {
-            return item.replaceAll("block:","item:");
+            item = item.replaceAll("block:","item:");
         }
         return item;
+    }
+
+    public static String transform(String item) {
+        if(item.contains("easyt_potion"))
+            return item.replaceAll("easyt_potion","");
+        if(item.contains("potion"))
+            item = transformPotion(item);
+        return "<" + changePrefix(item) + ">";
     }
 
     public List<String> listAllItems(List<Slot> slots) {

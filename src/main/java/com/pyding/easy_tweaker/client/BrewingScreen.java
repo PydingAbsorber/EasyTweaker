@@ -3,6 +3,8 @@ package com.pyding.easy_tweaker.client;
 import com.pyding.easy_tweaker.menu.BrewingMenu;
 import com.pyding.easy_tweaker.util.EasyUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PotionItem;
 
 import java.util.List;
 
@@ -23,7 +25,9 @@ public class BrewingScreen extends TweakerScreen<BrewingMenu> {
         String main = items.get(2);
         items.remove(2);
         String nbt = "";
-        if(switchTagOn)
+        ItemStack mainStack = this.menu.getMainStack();
+        boolean potion = mainStack.getItem() instanceof PotionItem;
+        if(switchTagOn && !potion)
             nbt = ".withTag(" + menu.getMainNbt() +")";
         if(switchOn)
             return EasyUtil.addBrew(main,items.get(0),items.get(1),nbt);

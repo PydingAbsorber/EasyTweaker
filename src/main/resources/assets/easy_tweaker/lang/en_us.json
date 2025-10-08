@@ -7,5 +7,9 @@
   "et.switch.on": "Switch recipe to remove mode.",
   "et.switch.off": "Switch recipe to addition mode.",
   "et.switch_tag.on": "Switch to disable tags.",
-  "et.switch_tag.off": "Switch to enable tags."
+  "et.switch_tag.off": "Switch to enable tags.",
+  "et.switch_shape.on": "Switch to shapeless.",
+  "et.switch_shape.off": "Switch to shaped.",
+  "et.switch_blast.on": "Switch to Blast Furnace.",
+  "et.switch_blast.off": "Switch to Furnace."
 }
