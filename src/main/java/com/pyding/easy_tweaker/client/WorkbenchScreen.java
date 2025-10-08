@@ -22,8 +22,17 @@ public class WorkbenchScreen extends TweakerScreen<WorkbenchMenu> {
         List<String> items = this.menu.listAllItems();
         String main = items.get(9);
         items.remove(9);
+        String nbt = "";
+        if(switchTagOn)
+            nbt = ".withTag(" + menu.getMainNbt() +")";
+        String name = main;
+        if(!recipeName.getValue().isEmpty())
+            name = recipeName.getValue();
+        int quant = 1;
+        if(!quantity.getValue().isEmpty())
+            quant = Integer.parseInt(quantity.getValue());
         if(switchOn)
-            return EasyUtil.addShapeless(main, main, 1, items);
+            return EasyUtil.addShapeless(main, name, quant, items,nbt);
         else return EasyUtil.removeRecipeCraftingTable(main);
     }
 }

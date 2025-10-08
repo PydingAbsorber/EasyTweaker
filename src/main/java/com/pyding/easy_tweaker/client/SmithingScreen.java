@@ -24,8 +24,17 @@ public class SmithingScreen extends TweakerScreen<SmithingMenu> {
         List<String> items = this.menu.listAllItems();
         String main = items.get(3);
         items.remove(3);
+        String nbt = "";
+        if(switchTagOn)
+            nbt = ".withTag(" + menu.getMainNbt() +")";
+        String name = main;
+        if(!recipeName.getValue().isEmpty())
+            name = recipeName.getValue();
+        int quant = 1;
+        if(!quantity.getValue().isEmpty())
+            quant = Integer.parseInt(quantity.getValue());
         if(switchOn)
-            return EasyUtil.addSmithy(main,main,items.get(1),items.get(0),items.get(2));
+            return EasyUtil.addSmithy(main,name,items.get(1),items.get(0),items.get(2),nbt,quant);
         return EasyUtil.removeSmithy(main);
     }
 }

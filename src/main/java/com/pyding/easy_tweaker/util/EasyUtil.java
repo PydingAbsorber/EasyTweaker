@@ -36,7 +36,7 @@ public class EasyUtil {
     }
 
     public static String addShapeless(String result, String name, int count,
-                                      List<String> list) {
+                                      List<String> list, String nbt) {
         int size = list.size();
         if(size < 9){
             for(int i = 0; i < 9-size;i++){
@@ -45,7 +45,7 @@ public class EasyUtil {
         }
 
         return "craftingTable.addShapeless(\"" + name.replaceAll(":","_") + "\", " +
-                "<" + changePrefix(result) + "> * " + count + ", " +
+                "<" + changePrefix(result) + ">" + nbt + " * " + count + ", " +
                 "[" +
                 "<" + changePrefix(list.get(0)) + ">, " +
                 "<" + changePrefix(list.get(1)) + ">, " +
@@ -61,54 +61,30 @@ public class EasyUtil {
     }
 
     public static String addFurnace(String result, String name, int count,
-                                      String rawItem, float xp, int time) {
+                                      String rawItem, float xp, int time, String nbt) {
         return "furnace.addRecipe(\"" + name.replaceAll(":","_") + "\", " +
-                "<" + changePrefix(result)+ "> * " + count + ", " +
+                "<" + changePrefix(result)+ ">" + nbt + " * " + count + ", " +
                 "<" + changePrefix(rawItem) + ">, " +
                 xp + ", " +
                 time +
                 ");";
     }
 
-    public static String addSmithy(String result, String name, String base, String template, String material) {
+    public static String addSmithy(String result, String name, String base, String template, String material, String nbt, int quantity) {
         return "smithing.addTransformRecipe(\"" + name.replaceAll(":","_") + "\", " +
-                "<" + changePrefix(result) + ">, " +
+                "<" + changePrefix(result) + ">" + nbt + " * " + quantity + ", " +
                 "<" + changePrefix(template) + ">, " +
                 "<" + changePrefix(base) + ">, " +
                 "<" + changePrefix(material) + ">" +
                 ");";
     }
 
-    public static String addBrew(String result,String reagent, String input) {
+    public static String addBrew(String result,String reagent, String input, String nbt) {
         if(result.contains("potion"))
             result = transformPotion(result);
         if(input.contains("potion"))
             input = transformPotion(input);
-        return "brewing.addRecipe(<" + result + ">, <" + reagent + ">, <" + input + ">);";
-    }
-
-    public static String addPetal(String result, String name, int count,
-                                      List<String> list) {
-        int size = list.size();
-        if(size < 9){
-            for(int i = 0; i < 9-size;i++){
-                list.add("item:minecraft:air");
-            }
-        }
-        return "<recipetype:botania:petal_apothecary>.add(\"" + name.replaceAll(":","_") + "\", " +
-                "<" + result.replace("<block:", "<item:") + "> * " + count + ", " +
-                "[" +
-                "<" + changePrefix(list.get(0)) + ">, " +
-                "<" + changePrefix(list.get(1)) + ">, " +
-                "<" + changePrefix(list.get(2)) + ">, " +
-                "<" + changePrefix(list.get(3)) + ">, " +
-                "<" + changePrefix(list.get(4)) + ">, " +
-                "<" + changePrefix(list.get(5)) + ">, " +
-                "<" + changePrefix(list.get(6)) + ">, " +
-                "<" + changePrefix(list.get(7)) + ">, " +
-                "<" + changePrefix(list.get(8)) + ">" +
-                "]" +
-                ");";
+        return "brewing.addRecipe(<" + result + ">" + nbt + ", <" + reagent + ">, <" + input + ">);";
     }
 
     public static void writeRecipe(String recipe, Player player){
@@ -189,7 +165,7 @@ public class EasyUtil {
     public static String transformPotion(String input) {
         String[] parts = input.split(":");
         if (parts.length == 5) {
-            return parts[2] + ":" + parts[1] + ":" + parts[4];
+            return "item:minecraft:potion";
         } else {
             return input;
         }

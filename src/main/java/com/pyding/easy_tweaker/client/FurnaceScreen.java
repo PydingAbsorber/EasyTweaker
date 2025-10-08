@@ -22,8 +22,18 @@ public class FurnaceScreen extends TweakerScreen<FurnaceMenu> {
         List<String> items = this.menu.listAllItems();
         String main = items.get(1);
         items.remove(1);
+        String nbt = "";
+        if(switchTagOn)
+            nbt = ".withTag(" + menu.getMainNbt() +")";
+        String name = main;
+        if(!recipeName.getValue().isEmpty())
+            name = recipeName.getValue();
+        int quant = 1;
+        if(!quantity.getValue().isEmpty())
+            quant = Integer.parseInt(quantity.getValue());
+        int time = 1;
         if(switchOn)
-            return EasyUtil.addFurnace(main,main,1,items.get(0),1,1);
+            return EasyUtil.addFurnace(main,name,quant,items.get(0),0,time*20,nbt);
         return EasyUtil.removeFurnace(main);
     }
 }

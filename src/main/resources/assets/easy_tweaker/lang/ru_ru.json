@@ -5,5 +5,7 @@
   "et.button.add": "Добавить рецепт",
   "et.button.reload": "Перезагрузить рецепты",
   "et.switch.on": "Сменить режим рецепта на удаление.",
-  "et.switch.off": "Сменить режим рецепта на добавление."
+  "et.switch.off": "Сменить режим рецепта на добавление.",
+  "et.switch_tag.on": "Switch to disable tags.",
+  "et.switch_tag.off": "Switch to enable tags."
 }

@@ -22,8 +22,11 @@ public class BrewingScreen extends TweakerScreen<BrewingMenu> {
         List<String> items = menu.listAllItems();
         String main = items.get(2);
         items.remove(2);
+        String nbt = "";
+        if(switchTagOn)
+            nbt = ".withTag(" + menu.getMainNbt() +")";
         if(switchOn)
-            return EasyUtil.addBrew(main,items.get(0),items.get(1));
+            return EasyUtil.addBrew(main,items.get(0),items.get(1),nbt);
         return EasyUtil.removeBrew(main,items.get(0),items.get(1));
     }
 }

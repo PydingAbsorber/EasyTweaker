@@ -2,6 +2,7 @@ package com.pyding.easy_tweaker.menu;
 
 import com.pyding.easy_tweaker.item.RecipeManager;
 import com.pyding.easy_tweaker.mixin.SmitingMixing;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -90,11 +91,20 @@ public class TweakerMenu extends AbstractContainerMenu {
         for (int i = 0; i < getContainerSize(); i++) {
             Slot slot = this.slots.get(i);
             if (slot.hasItem()) {
-                if (slot.getItem().getItem() instanceof SmithingTemplateItem templateItem && ((SmitingMixing) templateItem).upgradeDescription().getContents() instanceof TranslatableContents translatableContents)
-                    items.add(translatableContents.getKey());
+                if (slot.getItem().getItem() instanceof SmithingTemplateItem) {
+                    //items.add(translatableContents.getKey());  && ((SmitingMixing) templateItem).upgradeDescription().getContents() instanceof TranslatableContents translatableContents
+                    items.add("item:" + BuiltInRegistries.ITEM.getKey(slot.getItem().getItem()));
+                }
                 else items.add(slot.getItem().getDescriptionId().replaceAll("\\.",":"));
             } else items.add("item:minecraft:air");
         }
         return items;
+    }
+
+    public String getMainNbt(){
+        ItemStack stack = this.slots.get(getContainerSize()-1).getItem();
+        if(stack.hasTag())
+            return stack.getTag().toString();
+        return "";
     }
 }

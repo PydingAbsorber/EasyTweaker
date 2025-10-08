@@ -7,9 +7,11 @@ import com.pyding.easy_tweaker.menu.TweakerMenu;
 import com.pyding.easy_tweaker.network.PacketHandler;
 import com.pyding.easy_tweaker.network.packets.GuiPacket;
 import com.pyding.easy_tweaker.util.EasyUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -47,6 +49,7 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
     }
 
     public static boolean switchOn = true;
+    public static boolean switchTagOn = false;
 
     public TweakerScreen(T menu, net.minecraft.world.entity.player.Inventory inv, Component title) {
         super(menu, inv, title);
@@ -72,6 +75,8 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         }
         switchActive.visible = switchOn;
         switchUnactive.visible = !switchOn;
+        tagSwitchActive.visible = switchTagOn;
+        tagSwitchUnactive.visible = !switchTagOn;
         int buttonX = 270/5-20;
         int buttonY = 110/5;
         guiGraphics.drawString(this.font, Component.translatable("et.button.copy"), buttonX+copy.getX(), buttonY+copy.getY(), 0xFFFFFF, true);
@@ -98,9 +103,13 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
 
     public static Button switchActive;
     public static Button switchUnactive;
+    public static Button tagSwitchActive;
+    public static Button tagSwitchUnactive;
     public static Button copy;
     public static Button addRecipe;
     public static Button reload;
+    public static EditBox quantity;
+    public static EditBox recipeName;
 
     @Override
     protected void init() {
@@ -147,7 +156,7 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         x = this.width/2 - buttonSize/2;
         y = this.height - this.height/3 + buttonSize/3;
         switchActive = new ImageButton(
-                x, y,
+                x+buttonSize/2, y,
                 buttonSize, buttonSize,
                 0, 0, 0,
                 SWITCH_ACTIVE,
@@ -157,7 +166,7 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         switchActive.setTooltip(Tooltip.create(Component.translatable("et.switch.on")));
         this.addRenderableWidget(switchActive);
         switchUnactive = new ImageButton(
-                x, y,
+                x+buttonSize/2, y,
                 buttonSize, buttonSize,
                 0, 0, 0,
                 SWITCH_UNACTIVE,
@@ -166,6 +175,43 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         );
         switchUnactive.setTooltip(Tooltip.create(Component.translatable("et.switch.off")));
         this.addRenderableWidget(switchUnactive);
+        tagSwitchActive = new ImageButton(
+                x-buttonSize/2, y,
+                buttonSize, buttonSize,
+                0, 0, 0,
+                SWITCH_ACTIVE,
+                buttonSize, buttonSize,
+                button -> switchTagOn = false
+        );
+        tagSwitchActive.setTooltip(Tooltip.create(Component.translatable("et.switch_tag.on")));
+        this.addRenderableWidget(tagSwitchActive);
+        tagSwitchUnactive = new ImageButton(
+                x-buttonSize/2, y,
+                buttonSize, buttonSize,
+                0, 0, 0,
+                SWITCH_UNACTIVE,
+                buttonSize, buttonSize,
+                button -> switchTagOn = true
+        );
+        tagSwitchUnactive.setTooltip(Tooltip.create(Component.translatable("et.switch_tag.off")));
+        this.addRenderableWidget(tagSwitchUnactive);
+
+        int boxSizeX = 120;
+        int boxSizeY = 26;
+        x = this.width/2 - boxSizeX/2;
+
+        quantity = new EditBox(this.font, x+boxSizeX+buttonSize/2-16, y+boxSizeY/2+6, boxSizeX, boxSizeY, Component.literal("Quantity"));
+        quantity.setMaxLength(100);
+        quantity.setValue("");
+        quantity.setBordered(true);
+        quantity.setTooltip(Tooltip.create(Component.literal("Quantity")));
+        this.addRenderableWidget(quantity);
+        recipeName = new EditBox(this.font, x-boxSizeX-buttonSize/2+16, y+boxSizeY/2+6, boxSizeX, boxSizeY, Component.literal("Recipe Name"));
+        recipeName.setMaxLength(100);
+        recipeName.setValue("");
+        recipeName.setBordered(true);
+        recipeName.setTooltip(Tooltip.create(Component.literal("Recipe Name")));
+        this.addRenderableWidget(recipeName);
 
         int iconSize = 64;
         int spacing = 16;

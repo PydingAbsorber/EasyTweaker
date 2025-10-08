@@ -5,5 +5,7 @@
   "et.button.add": "Add recipe",
   "et.button.reload": "Reload recipes",
   "et.switch.on": "Switch recipe to remove mode.",
-  "et.switch.off": "Switch recipe to addition mode."
+  "et.switch.off": "Switch recipe to addition mode.",
+  "et.switch_tag.on": "Switch to disable tags.",
+  "et.switch_tag.off": "Switch to enable tags."
 }
