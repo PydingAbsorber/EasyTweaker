@@ -141,7 +141,7 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         int buttonX = 270/2;
         int buttonY = 110/2;
         int x = this.width/2 - buttonX/2;
-        int y = this.height - this.height/3 - buttonY/2;
+        int y = this.getGuiTop() + this.getYSize();
         copy = new ImageButton(
                 x-buttonX, y,
                 buttonX, buttonY,
@@ -171,7 +171,7 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         this.addRenderableWidget(reload);
         int buttonSize = 32*2;
         x = this.width/2 - buttonSize/2;
-        y = this.height - this.height/3 + buttonSize/3;
+        y += buttonSize;
         switchActive = new ImageButton(
                 x+buttonSize/2, y,
                 buttonSize, buttonSize,
@@ -299,9 +299,6 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (recipeName.isFocused()) {
             if (keyCode == GLFW.GLFW_KEY_E) {
-                return recipeName.keyPressed(keyCode, scanCode, modifiers);
-            }
-            if (recipeName.keyPressed(keyCode, scanCode, modifiers) || recipeName.canConsumeInput()) {
                 return true;
             }
         }

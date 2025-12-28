@@ -20,7 +20,7 @@ public class EasyUtil {
     }
 
     public static String removeSmithy(String item) {
-        return "smithing.remove(<tag:items:" + item.replaceFirst("^item:", "") + ">);";
+        return "smithing.remove(" + transform(item) + ");";
     }
 
     public static String removeRecipeCraftingTable(String item) {
@@ -131,7 +131,16 @@ public class EasyUtil {
         if (zsFiles != null && zsFiles.length > 0) {
             targetFile = zsFiles[0];
         } else {
-            targetFile = new File(scriptsDir, "auto_generated.zs");
+            targetFile = new File(scriptsDir, "script.zs");
+        }
+
+        if(true){
+            player.sendSystemMessage(Component.literal("jarPath: " + jarPath));
+            player.sendSystemMessage(Component.literal("modsDir: " + modsDir));
+            player.sendSystemMessage(Component.literal("mcRoot: " + mcRoot));
+            player.sendSystemMessage(Component.literal("scriptsDir: " + scriptsDir));
+            player.sendSystemMessage(Component.literal("zsFiles: " + zsFiles));
+            player.sendSystemMessage(Component.literal("targetFile: " + targetFile));
         }
 
         try (FileWriter writer = new FileWriter(targetFile, true)) {
@@ -141,6 +150,8 @@ public class EasyUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 
     public static String cutPrefix(String remove) {
