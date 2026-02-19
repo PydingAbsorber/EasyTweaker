@@ -2,6 +2,7 @@ package com.pyding.easy_tweaker.util;
 
 import com.blamejared.crafttweaker.api.action.internal.CraftTweakerAction;
 import com.pyding.easy_tweaker.EasyTweaker;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -107,17 +108,22 @@ public class EasyUtil {
             return;
         String jarPath = EasyTweaker.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         File jarFile = new File(jarPath);
+        if(!jarFile.exists()){
+            try {
+                jarFile = new File(EasyTweaker.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            } catch (Exception e){
+                player.sendSystemMessage(Component.literal("EasyTweaker: Error on trying to find mods folder: " + e.getMessage()).withStyle(ChatFormatting.RED));
+            }
+        }
         File modsDir = jarFile.getParentFile();
         if (modsDir == null || !modsDir.getName().equals("mods")) {
-            if(player != null)
-                player.sendSystemMessage(Component.literal("Can't locate mods folder."));
+            player.sendSystemMessage(Component.literal("EasyTweaker: Can't locate mods folder.").withStyle(ChatFormatting.RED));
             return;
         }
 
         File mcRoot = modsDir.getParentFile();
         if (mcRoot == null) {
-            if(player != null)
-                player.sendSystemMessage(Component.literal("Can't locate minecraft folder."));
+            player.sendSystemMessage(Component.literal("EasyTweaker: Can't locate minecraft folder.").withStyle(ChatFormatting.RED));
             return;
         }
 
@@ -146,7 +152,7 @@ public class EasyUtil {
         try (FileWriter writer = new FileWriter(targetFile, true)) {
             writer.write(recipe + System.lineSeparator());
             writer.flush();
-            player.sendSystemMessage(Component.literal("Recipe added."));
+            player.sendSystemMessage(Component.literal("EasyTweaker: Recipe added.").withStyle(ChatFormatting.GREEN));
         } catch (IOException e) {
             e.printStackTrace();
         }
