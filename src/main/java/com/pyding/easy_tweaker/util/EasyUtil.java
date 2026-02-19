@@ -134,7 +134,7 @@ public class EasyUtil {
             targetFile = new File(scriptsDir, "script.zs");
         }
 
-        if(true){
+        if(ConfigHandler.COMMON.log.get()){
             player.sendSystemMessage(Component.literal("jarPath: " + jarPath));
             player.sendSystemMessage(Component.literal("modsDir: " + modsDir));
             player.sendSystemMessage(Component.literal("mcRoot: " + mcRoot));
