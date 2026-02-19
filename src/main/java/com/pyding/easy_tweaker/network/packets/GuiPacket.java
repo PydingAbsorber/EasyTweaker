@@ -62,6 +62,9 @@ public class GuiPacket {
                     case 6:
                         RecipeManager.openBotaniaGUI(player);
                         break;
+                    case 7:
+                        EasyUtil.deleteRecipe(player);
+                        break;
                 }
             }
         });

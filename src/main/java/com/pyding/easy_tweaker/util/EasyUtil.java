@@ -11,6 +11,9 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,9 +106,7 @@ public class EasyUtil {
         return "brewing.addRecipe(" + transform(result) + nbt + ", " + transform(reagent) + ", " + transform(input) + ");";
     }
 
-    public static void writeRecipe(String recipe, Player player){
-        if(!player.hasPermissions(2))
-            return;
+    public static File getFile(Player player){
         String jarPath = EasyTweaker.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         File jarFile = new File(jarPath);
         if(!jarFile.exists()){
@@ -118,20 +119,17 @@ public class EasyUtil {
         File modsDir = jarFile.getParentFile();
         if (modsDir == null || !modsDir.getName().equals("mods")) {
             player.sendSystemMessage(Component.literal("EasyTweaker: Can't locate mods folder.").withStyle(ChatFormatting.RED));
-            return;
+            return null;
         }
-
         File mcRoot = modsDir.getParentFile();
         if (mcRoot == null) {
             player.sendSystemMessage(Component.literal("EasyTweaker: Can't locate minecraft folder.").withStyle(ChatFormatting.RED));
-            return;
+            return null;
         }
-
         File scriptsDir = new File(mcRoot, "scripts");
         if (!scriptsDir.exists()) {
             scriptsDir.mkdirs();
         }
-
         File[] zsFiles = scriptsDir.listFiles((dir, nameFile) -> nameFile.endsWith(".zs"));
         File targetFile;
         if (zsFiles != null && zsFiles.length > 0) {
@@ -139,7 +137,6 @@ public class EasyUtil {
         } else {
             targetFile = new File(scriptsDir, "script.zs");
         }
-
         if(ConfigHandler.COMMON.log.get()){
             player.sendSystemMessage(Component.literal("jarPath: " + jarPath));
             player.sendSystemMessage(Component.literal("modsDir: " + modsDir));
@@ -148,16 +145,43 @@ public class EasyUtil {
             player.sendSystemMessage(Component.literal("zsFiles: " + zsFiles));
             player.sendSystemMessage(Component.literal("targetFile: " + targetFile));
         }
+        return targetFile;
+    }
 
-        try (FileWriter writer = new FileWriter(targetFile, true)) {
+    public static void writeRecipe(String recipe, Player player){
+        if(!player.hasPermissions(2))
+            return;
+        File file = getFile(player);
+        if(file == null)
+            return;
+        try (FileWriter writer = new FileWriter(file, true)) {
             writer.write(recipe + System.lineSeparator());
             writer.flush();
             player.sendSystemMessage(Component.literal("EasyTweaker: Recipe added.").withStyle(ChatFormatting.GREEN));
         } catch (IOException e) {
-            e.printStackTrace();
+            player.sendSystemMessage(Component.literal("EasyTweaker: Error: " + e.getMessage()).withStyle(ChatFormatting.RED));
         }
+    }
 
-
+    public static void deleteRecipe(Player player){
+        if(!player.hasPermissions(2))
+            return;
+        File file = getFile(player);
+        if(file == null)
+            return;
+        try {
+            Path path = file.toPath();
+            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            if (lines.isEmpty()) {
+                player.sendSystemMessage(Component.literal("§eFile is already empty.").withStyle(ChatFormatting.RED));
+                return;
+            }
+            String removedLine = lines.remove(lines.size() - 1);
+            Files.write(path, lines, StandardCharsets.UTF_8);
+            player.sendSystemMessage(Component.literal("EasyTweaker: Recipe removed " + removedLine).withStyle(ChatFormatting.GREEN));
+        } catch (IOException e) {
+            player.sendSystemMessage(Component.literal("EasyTweaker: Error: " + e.getMessage()).withStyle(ChatFormatting.RED));
+        }
     }
 
     public static String cutPrefix(String remove) {

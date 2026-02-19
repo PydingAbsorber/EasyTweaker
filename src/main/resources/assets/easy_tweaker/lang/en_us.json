@@ -4,6 +4,7 @@
   "et.button.copy": "Copy recipe",
   "et.button.add": "Add recipe",
   "et.button.reload": "Reload recipes",
+  "et.button.remove": "Delete last recipe",
   "et.switch.on": "Switch recipe to remove mode.",
   "et.switch.off": "Switch recipe to addition mode.",
   "et.switch_tag.on": "Switch to disable tags.",

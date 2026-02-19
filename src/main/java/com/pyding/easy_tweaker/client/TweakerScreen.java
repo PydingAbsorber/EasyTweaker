@@ -95,6 +95,7 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         guiGraphics.drawString(this.font, Component.translatable("et.button.copy"), buttonX+copy.getX(), buttonY+copy.getY(), 0xFFFFFF, true);
         guiGraphics.drawString(this.font, Component.translatable("et.button.add"), buttonX+addRecipe.getX(), buttonY+addRecipe.getY(), 0xFFFFFF, true);
         guiGraphics.drawString(this.font, Component.translatable("et.button.reload"), buttonX+reload.getX(), buttonY+reload.getY(), 0xFFFFFF, true);
+        guiGraphics.drawString(this.font, Component.translatable("et.button.remove"), buttonX+remove.getX(), buttonY+remove.getY(), 0xFFFFFF, true);
     }
 
     @Override
@@ -127,6 +128,7 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
     public static Button shaped;
     public static Button blastFurnace;
     public static Button furnace;
+    public static Button remove;
 
     @Override
     protected void init() {
@@ -254,6 +256,16 @@ public abstract class TweakerScreen<T extends TweakerMenu> extends AbstractConta
         );
         furnace.setTooltip(Tooltip.create(Component.translatable("et.switch_blast.off")));
         this.addRenderableWidget(furnace);
+
+        remove = new ImageButton(
+                x+width/6-buttonX/2, height/2-buttonY/2,
+                buttonX, buttonY,
+                0, 0, 0,
+                BUTTON,
+                buttonX, buttonY,
+                button -> PacketHandler.sendToServer(new GuiPacket(player.getUUID(),7,getRecipe()))
+        );
+        this.addRenderableWidget(remove);
 
         int boxSizeX = 120;
         int boxSizeY = 26;
